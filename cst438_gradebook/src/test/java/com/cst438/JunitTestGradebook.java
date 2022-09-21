@@ -348,6 +348,8 @@ public class JunitTestGradebook {
 		ag.setId(1);
 		ag.setScore("80");
 		ag.setStudentEnrollment(enrollment);
+		
+	
 
 		// given -- stubs for database repositories that return test data
 		given(assignmentRepository.findById(1)).willReturn(Optional.of(assignment));
