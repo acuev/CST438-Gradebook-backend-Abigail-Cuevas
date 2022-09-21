@@ -7,16 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentListDTO;
+import com.cst438.domain.AssignmentListDTO.AssignmentDTO;
 import com.cst438.domain.AssignmentGrade;
 import com.cst438.domain.AssignmentGradeRepository;
 import com.cst438.domain.AssignmentRepository;
@@ -26,6 +29,7 @@ import com.cst438.domain.CourseRepository;
 import com.cst438.domain.Enrollment;
 import com.cst438.domain.GradebookDTO;
 import com.cst438.services.RegistrationService;
+import java.sql.Date;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000","http://localhost:3001"})
@@ -158,6 +162,7 @@ public class GradeBookController {
 	
 	private Assignment checkAssignment(int assignmentId, String email) {
 		// get assignment 
+		
 		Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null);
 		if (assignment == null) {
 			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment not found. "+assignmentId );
@@ -169,5 +174,106 @@ public class GradeBookController {
 		
 		return assignment;
 	}
+	//------------------------- TO DO ---------------------------------------------------------------------------------------------------------------------------------------
+	//get all the assignments
+	// works :)
+	@GetMapping("/assignment")
+	public AssignmentListDTO getAssignments( ) {
+		
+		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+		
+		Iterable<Assignment> assignments = assignmentRepository.findAll();
+		AssignmentListDTO result = new AssignmentListDTO();
+		for (Assignment a: assignments) {
+			result.assignments.add(new AssignmentListDTO.AssignmentDTO(a.getId(), a.getCourse().getCourse_id(), a.getName(), a.getDueDate().toString() , a.getCourse().getTitle()));
+		}
+		
+		return result;
+	}
+	//get the specified assignment
+	//works :)
+	@GetMapping("/assignment/{assignmentId}")
+	public AssignmentListDTO getAssignment(@PathVariable("assignmentId") Integer assignmentId  ) {
+		
+		String email = "dwisneski@csumb.edu";  
+		Assignment assignment = checkAssignment(assignmentId, email);
+		
+		AssignmentListDTO result = new AssignmentListDTO();
+		result.assignments.add(new AssignmentListDTO.AssignmentDTO(assignment.getId(), assignment.getCourse().getCourse_id(), assignment.getName(), assignment.getDueDate().toString() , assignment.getCourse().getTitle()));
 
+		return result;
+	}
+	
+	// add an assignment
+	// works:)
+	@PostMapping("/assignment")
+	@Transactional
+	public AssignmentListDTO createAssignment(@RequestBody AssignmentListDTO.AssignmentDTO assignments) {
+		
+		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+		
+		int course_id = assignments.courseId;
+		Course c = courseRepository.findById(course_id).orElse(null);
+		if(c == null) {
+			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Course not found. " );
+		}
+		if (!c.getInstructor().equals(email)) {
+			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Not Authorized. " );
+		}
+		
+		String due = assignments.dueDate;
+		//change to Date
+		Date date = Date.valueOf(due);
+		
+		//add the assignment
+		Assignment assign = new Assignment();
+		assign.setCourse(c);
+		assign.setName(assignments.assignmentName);
+		assign.setDueDate(date);
+		assign.setNeedsGrading(1); // needs grading
+		assignmentRepository.save(assign);
+		
+		AssignmentListDTO result = new AssignmentListDTO();
+        result.assignments.add(new AssignmentListDTO.AssignmentDTO(assign.getId(), assign.getCourse().getCourse_id(), assign.getName(), assign.getDueDate().toString() , assign.getCourse().getTitle()));
+		
+        return result;
+	}
+	
+
+	// change the name of the assignment
+	// it works:)
+	@PutMapping("/assignment/{assignmentId}")
+	@Transactional
+	public void changeName(@RequestParam("name") String assign, @PathVariable int assignmentId) {
+	
+		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+		Assignment assignment = checkAssignment(assignmentId, email);
+		
+		if (assignment == null) {
+			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment not found. "+assignmentId );
+		}else {
+			assignment.setName(assign);
+			assignmentRepository.save(assignment);
+			System.out.printf("%s\n", assignment.toString());
+		} 
+	}
+	
+	// delete an assignment (if there are no grades for the assignment)
+	// 0 = false,  1= true (past due date and not all students have grades)
+	// it works :)
+	@DeleteMapping("/assignment/{assignmentId}")
+	@Transactional
+	public void deleteAssignment(@PathVariable("assignmentId") Integer assignmentId) {
+        String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+		
+        Assignment tAssignments = checkAssignment(assignmentId,email);
+		
+		if(tAssignments.getNeedsGrading() != 0) {
+			assignmentRepository.delete(tAssignments);
+		}else {
+			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Error");
+		}
+	
+	}
+	
 }
