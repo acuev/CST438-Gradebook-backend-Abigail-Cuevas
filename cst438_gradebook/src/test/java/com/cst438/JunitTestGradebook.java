@@ -432,7 +432,6 @@ public class JunitTestGradebook {
 		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
 		
-		
 	}
 
 	private static String asJsonString(final Object obj) {
