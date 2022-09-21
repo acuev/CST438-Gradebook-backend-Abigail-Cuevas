@@ -214,11 +214,12 @@ public class GradeBookController {
 		
 		int course_id = assignments.courseId;
 		Course c = courseRepository.findById(course_id).orElse(null);
-		if(c == null) {
-			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Course not found. " );
+		
+		if (c == null) {
+			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Course not found.");
 		}
 		if (!c.getInstructor().equals(email)) {
-			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Not Authorized. " );
+			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Not Authorized.");
 		}
 		
 		String due = assignments.dueDate;
@@ -234,9 +235,9 @@ public class GradeBookController {
 		assignmentRepository.save(assign);
 		
 		AssignmentListDTO result = new AssignmentListDTO();
-        result.assignments.add(new AssignmentListDTO.AssignmentDTO(assign.getId(), assign.getCourse().getCourse_id(), assign.getName(), assign.getDueDate().toString() , assign.getCourse().getTitle()));
+        	result.assignments.add(new AssignmentListDTO.AssignmentDTO(assign.getId(), assign.getCourse().getCourse_id(), assign.getName(), assign.getDueDate().toString() , assign.getCourse().getTitle()));
 		
-        return result;
+        	return result;
 	}
 	
 
@@ -250,8 +251,8 @@ public class GradeBookController {
 		Assignment assignment = checkAssignment(assignmentId, email);
 		
 		if (assignment == null) {
-			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment not found. "+assignmentId );
-		}else {
+			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment not found. "+ assignmentId );
+		} else {
 			assignment.setName(assign);
 			assignmentRepository.save(assignment);
 			System.out.printf("%s\n", assignment.toString());
@@ -264,16 +265,14 @@ public class GradeBookController {
 	@DeleteMapping("/assignment/{assignmentId}")
 	@Transactional
 	public void deleteAssignment(@PathVariable("assignmentId") Integer assignmentId) {
-        String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+        	String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
 		
-        Assignment tAssignments = checkAssignment(assignmentId,email);
+        	Assignment tAssignments = checkAssignment(assignmentId,email);
 		
-		if(tAssignments.getNeedsGrading() != 0) {
+		if (tAssignments.getNeedsGrading() != 0) {
 			assignmentRepository.delete(tAssignments);
-		}else {
+		} else {
 			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Error");
 		}
-	
 	}
-	
 }
