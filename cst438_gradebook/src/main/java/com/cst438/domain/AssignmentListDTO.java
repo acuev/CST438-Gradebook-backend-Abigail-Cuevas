@@ -21,6 +21,10 @@ public class AssignmentListDTO {
 			this.assignmentName = assignmentName;
 			this.dueDate = dueDate;
 			this.courseTitle = courseTitle;
+		
+		}
+		public AssignmentDTO() {
+			
 		}
 
 		@Override

@@ -23,6 +23,7 @@ import com.cst438.controllers.GradeBookController;
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentGrade;
 import com.cst438.domain.AssignmentGradeRepository;
+import com.cst438.domain.AssignmentListDTO;
 import com.cst438.domain.AssignmentRepository;
 import com.cst438.domain.Course;
 import com.cst438.domain.CourseRepository;
@@ -117,6 +118,7 @@ public class JunitTestGradebook {
 		given(assignmentGradeRepository.save(any())).willReturn(ag);
 
 		// end of mock data
+		
 
 		// then do an http get request for assignment 1
 		response = mvc.perform(MockMvcRequestBuilders.get("/gradebook/1").accept(MediaType.APPLICATION_JSON))
@@ -217,6 +219,7 @@ public class JunitTestGradebook {
 		// verify that returned data has non zero primary key
 		GradebookDTO result = fromJsonString(response.getContentAsString(), GradebookDTO.class);
 		// assignment id is 1
+		
 		assertEquals(1, result.assignmentId);
 		// there is one student list
 		assertEquals(1, result.grades.size());
@@ -261,4 +264,5 @@ public class JunitTestGradebook {
 		}
 	}
 
+	
 }
