@@ -246,8 +246,6 @@ public class JunitTestGradebook {
 		verify(assignmentGradeRepository, times(1)).save(updatedag);
 	}
 	
-	
-	
 // ---------------------------------------- Junit Test ----------------------------------------------------------------------------------	
 	@Test
 	public void addAssignment() throws Exception {
@@ -388,6 +386,7 @@ public class JunitTestGradebook {
 	
 	}
 	
+	
 	@Test
 	public void deleteAssignment() throws Exception {
 		MockHttpServletResponse response;
@@ -458,6 +457,7 @@ public class JunitTestGradebook {
 		// verify that a delete was called on repository 
 		verify(assignmentRepository, times(1)).delete(any());	
 	}
+	//end
 
 	private static String asJsonString(final Object obj) {
 		try {
@@ -476,4 +476,5 @@ public class JunitTestGradebook {
 		}
 	}
 
+	
 }
