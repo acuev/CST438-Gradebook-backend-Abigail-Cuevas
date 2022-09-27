@@ -176,7 +176,7 @@ public class GradeBookController {
 	}
 	//------------------------- TO DO ---------------------------------------------------------------------------------------------------------------------------------------
 	//get all the assignments
-	// it works :)
+	// works :)
 	@GetMapping("/assignment")
 	public AssignmentListDTO getAssignments( ) {
 		
@@ -205,7 +205,7 @@ public class GradeBookController {
 	}
 	
 	// add an assignment
-	// it works:)
+	// works:)
 	@PostMapping("/assignment")
 	@Transactional
 	public AssignmentListDTO createAssignment(@RequestBody AssignmentListDTO.AssignmentDTO assignments) {
