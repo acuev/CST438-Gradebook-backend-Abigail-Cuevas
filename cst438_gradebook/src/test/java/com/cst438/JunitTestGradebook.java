@@ -245,7 +245,7 @@ public class JunitTestGradebook {
 		updatedag.setScore("88");
 		verify(assignmentGradeRepository, times(1)).save(updatedag);
 	}
-	
+
 // ---------------------------------------- Junit Test ----------------------------------------------------------------------------------	
 	@Test
 	public void createAssignment() throws Exception {
@@ -358,7 +358,6 @@ public class JunitTestGradebook {
 	
 	}
 	
-	
 	@Test
 	public void deleteAssignment() throws Exception {
 		MockHttpServletResponse response;
@@ -382,7 +381,6 @@ public class JunitTestGradebook {
 		assignment.setId(1);
 		assignment.setName("Assignment 1");
 		assignment.setNeedsGrading(1);
-
 
 		// given -- stubs for database repositories that return test data
 		given(assignmentRepository.findById(1)).willReturn(Optional.of(assignment));
