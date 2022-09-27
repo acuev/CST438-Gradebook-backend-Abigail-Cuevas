@@ -248,7 +248,7 @@ public class JunitTestGradebook {
 	
 // ---------------------------------------- Junit Test ----------------------------------------------------------------------------------	
 	@Test
-	public void addAssignment() throws Exception {
+	public void createAssignment() throws Exception {
 
 		MockHttpServletResponse response;
 
@@ -260,13 +260,6 @@ public class JunitTestGradebook {
 		course.setInstructor(TEST_INSTRUCTOR_EMAIL);
 		course.setEnrollments(new java.util.ArrayList<Enrollment>());
 		course.setAssignments(new java.util.ArrayList<Assignment>());
-		
-		Enrollment enrollment = new Enrollment();
-		enrollment.setCourse(course);
-		course.getEnrollments().add(enrollment);
-		enrollment.setId(TEST_COURSE_ID);
-		enrollment.setStudentEmail(TEST_STUDENT_EMAIL);
-		enrollment.setStudentName(TEST_STUDENT_NAME);
 
 		Assignment assignment = new Assignment();
 		assignment.setCourse(course);
@@ -283,8 +276,7 @@ public class JunitTestGradebook {
 		given(courseRepository.findById(TEST_COURSE_ID)).willReturn(Optional.of(course));
 		
 		// then do an http get request for assignment 1
-		response = mvc.perform(MockMvcRequestBuilders.get("/assignment/1").accept(MediaType.APPLICATION_JSON))
-				.andReturn().getResponse();
+		response = mvc.perform(MockMvcRequestBuilders.get("/assignment/1").accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
 		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
@@ -301,9 +293,7 @@ public class JunitTestGradebook {
 
 		// send update to the servers
 		AssignmentListDTO.AssignmentDTO result1 = new AssignmentListDTO.AssignmentDTO(assignment.getId(), assignment.getCourse().getCourse_id(), assignment.getName(), assignment.getDueDate().toString() , assignment.getCourse().getTitle());
-		response = mvc
-				.perform(MockMvcRequestBuilders.post("/assignment").accept(MediaType.APPLICATION_JSON)
-						.content(asJsonString(result1)).contentType(MediaType.APPLICATION_JSON))
+		response = mvc.perform(MockMvcRequestBuilders.post("/assignment").accept(MediaType.APPLICATION_JSON).content(asJsonString(result1)).contentType(MediaType.APPLICATION_JSON))
 				.andReturn().getResponse();
 	    // verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
@@ -312,12 +302,11 @@ public class JunitTestGradebook {
 	}
 
 	@Test
-	public void changeAssignmentName() throws Exception {
+	public void changeName() throws Exception {
 
 		MockHttpServletResponse response;
 
 		// mock database data
-
 		Course course = new Course();
 		course.setCourse_id(TEST_COURSE_ID);
 		course.setSemester(TEST_SEMESTER);
@@ -326,13 +315,6 @@ public class JunitTestGradebook {
 		course.setTitle("unknown");
 		course.setEnrollments(new java.util.ArrayList<Enrollment>());
 		course.setAssignments(new java.util.ArrayList<Assignment>());
-
-		Enrollment enrollment = new Enrollment();
-		enrollment.setCourse(course);
-		course.getEnrollments().add(enrollment);
-		enrollment.setId(TEST_COURSE_ID);
-		enrollment.setStudentEmail(TEST_STUDENT_EMAIL);
-		enrollment.setStudentName(TEST_STUDENT_NAME);
 
 		Assignment assignment = new Assignment();
 		assignment.setCourse(course);
@@ -343,21 +325,13 @@ public class JunitTestGradebook {
 		assignment.setName("Assignment 1");
 		assignment.setNeedsGrading(1);
 
-		AssignmentGrade ag = new AssignmentGrade();
-		ag.setAssignment(assignment);
-		ag.setId(1);
-		ag.setScore("80");
-		ag.setStudentEnrollment(enrollment);
-
 		// given -- stubs for database repositories that return test data
 		given(assignmentRepository.findById(1)).willReturn(Optional.of(assignment));
 		given(courseRepository.findById(TEST_COURSE_ID)).willReturn(Optional.of(course));
 		// end of mock data
 
 		// then do an http get request for assignment 1
-		response = mvc.perform(MockMvcRequestBuilders.get("/assignment/1").accept(MediaType.APPLICATION_JSON))
-				.andReturn().getResponse();
-		
+		response = mvc.perform(MockMvcRequestBuilders.get("/assignment/1").accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
 		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
@@ -372,9 +346,7 @@ public class JunitTestGradebook {
 
 		// change Assignment 1 to changeName
 		// send updates to server
-		response = mvc
-				.perform(MockMvcRequestBuilders.put("/assignment/1?name=changeName").accept(MediaType.APPLICATION_JSON))
-				.andReturn().getResponse();
+		response = mvc.perform(MockMvcRequestBuilders.put("/assignment/1?name=changeName").accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
 		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());	
@@ -402,13 +374,6 @@ public class JunitTestGradebook {
 		course.setEnrollments(new java.util.ArrayList<Enrollment>());
 		course.setAssignments(new java.util.ArrayList<Assignment>());
 
-		Enrollment enrollment = new Enrollment();
-		enrollment.setCourse(course);
-		course.getEnrollments().add(enrollment);
-		enrollment.setId(TEST_COURSE_ID);
-		enrollment.setStudentEmail(TEST_STUDENT_EMAIL);
-		enrollment.setStudentName(TEST_STUDENT_NAME);
-
 		Assignment assignment = new Assignment();
 		assignment.setCourse(course);
 		course.getAssignments().add(assignment);
@@ -418,11 +383,6 @@ public class JunitTestGradebook {
 		assignment.setName("Assignment 1");
 		assignment.setNeedsGrading(1);
 
-		AssignmentGrade ag = new AssignmentGrade();
-		ag.setAssignment(assignment);
-		ag.setId(1);
-		ag.setScore("80");
-		ag.setStudentEnrollment(enrollment);
 
 		// given -- stubs for database repositories that return test data
 		given(assignmentRepository.findById(1)).willReturn(Optional.of(assignment));
@@ -430,8 +390,7 @@ public class JunitTestGradebook {
 		// end of mock data
 
 		// then do an http get request for assignment 1
-		response = mvc.perform(MockMvcRequestBuilders.get("/assignment/1").accept(MediaType.APPLICATION_JSON))
-				.andReturn().getResponse();
+		response = mvc.perform(MockMvcRequestBuilders.get("/assignment/1").accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
 		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
@@ -448,9 +407,7 @@ public class JunitTestGradebook {
 	
 		// delete assignment
 		// send updates to server
-		response = mvc
-				.perform(MockMvcRequestBuilders.delete("/assignment/1").accept(MediaType.APPLICATION_JSON))
-				.andReturn().getResponse();
+		response = mvc.perform(MockMvcRequestBuilders.delete("/assignment/1").accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
 		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
@@ -475,6 +432,4 @@ public class JunitTestGradebook {
 			throw new RuntimeException(e);
 		}
 	}
-
-	
 }
