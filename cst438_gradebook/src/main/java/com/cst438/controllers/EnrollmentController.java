@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cst438.domain.Assignment;
+import com.cst438.domain.AssignmentListDTO;
 import com.cst438.domain.Course;
 import com.cst438.domain.CourseRepository;
 import com.cst438.domain.Enrollment;
@@ -30,10 +32,22 @@ public class EnrollmentController {
 	@PostMapping("/enrollment")
 	@Transactional
 	public EnrollmentDTO addEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
+		//Receive the EnrollmentDTO and update enrollment table.
+        Course c = courseRepository.findById(enrollmentDTO.course_id).orElse(null);
 		
-		//TODO  complete this method in homework 4
+		if (c == null) {
+			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Course not found.");
+		}
+		Enrollment enroll = new Enrollment();
+		enroll.setStudentEmail(enrollmentDTO.studentEmail);
+		enroll.setStudentName(enrollmentDTO.studentName);
+		enroll.setCourse(c);
 		
-		return null;
+		enroll = enrollmentRepository.save(enroll);
+		
+		enrollmentDTO.id = enroll.getId();
+		
+		return enrollmentDTO;
 		
 	}
 
