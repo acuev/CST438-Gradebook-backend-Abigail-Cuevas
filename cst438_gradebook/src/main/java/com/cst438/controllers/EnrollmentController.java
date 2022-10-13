@@ -32,15 +32,12 @@ public class EnrollmentController {
 	@PostMapping("/enrollment")
 	@Transactional
 	public EnrollmentDTO addEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
-		
-		//TODO  complete this method in homework 4
 		//Receive the EnrollmentDTO and update enrollment table.
         Course c = courseRepository.findById(enrollmentDTO.course_id).orElse(null);
 		
 		if (c == null) {
 			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Course not found.");
 		}
-		//System.out.print(enrollmentDTO.course_id);
 		Enrollment enroll = new Enrollment();
 		enroll.setStudentEmail(enrollmentDTO.studentEmail);
 		enroll.setStudentName(enrollmentDTO.studentName);
@@ -48,7 +45,6 @@ public class EnrollmentController {
 		
 		enroll = enrollmentRepository.save(enroll);
 		
-		//EnrollmentDTO result = new EnrollmentDTO(enrollmentDTO.studentEmail, enrollmentDTO.studentName, c.getCourse_id());		
 		enrollmentDTO.id = enroll.getId();
 		
 		return enrollmentDTO;
