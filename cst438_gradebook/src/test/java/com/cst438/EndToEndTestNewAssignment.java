@@ -141,21 +141,6 @@ public class EndToEndTestNewAssignment {
 			
 		}catch(Exception ex) {
 			throw ex;
-		} finally {
-			/*
-			 *  clean up database so the test is repeatable.
-			 */
-			List<Assignment> assignments = assignmentRepository.findNeedGradingByEmail(TEST_INSTRUCTOR_EMAIL);
-			
-			for (Assignment a: assignments) {
-				ag = assignnmentGradeRepository.findByAssignmentIdAndStudentEmail(a.getId(), TEST_USER_EMAIL);
-				if (ag!=null) assignnmentGradeRepository.delete(ag);
-				assignmentRepository.delete(a);
-				enrollmentRepository.delete(e);
-				courseRepository.delete(c);
-			}
-		
-			driver.quit();
 		}
 	}
 }
