@@ -42,7 +42,7 @@ import com.cst438.domain.EnrollmentRepository;
 @SpringBootTest
 public class EndToEndTestSubmitGrades {
 
-	public static final String CHROME_DRIVER_FILE_LOCATION = "C:/chromedriver_win32/chromedriver.exe";
+	public static final String CHROME_DRIVER_FILE_LOCATION = "C:/Users/cueva/OneDrive/Desktop/chromedriver_win32/chromedriver.exe";
 
 	public static final String URL = "http://localhost:3000";
 	public static final String TEST_USER_EMAIL = "test@csumb.edu";
@@ -89,7 +89,7 @@ public class EndToEndTestSubmitGrades {
 		e.setStudentEmail(TEST_USER_EMAIL);
 		e.setStudentName(TEST_STUDENT_NAME);
 
-		courseRepository.save(c);
+		c = courseRepository.save(c);
 		a = assignmentRepository.save(a);
 		e = enrollmentRepository.save(e);
 
@@ -140,8 +140,8 @@ public class EndToEndTestSubmitGrades {
 			/*
 			 *  Locate and click Grade button to indicate to grade this assignment.
 			 */
-			
-			driver.findElement(By.xpath("//a")).click();
+		
+			driver.findElement(By.xpath("//a[@id='gradeButton']")).click();
 			Thread.sleep(SLEEP_DURATION);
 
 			/*
@@ -172,7 +172,7 @@ public class EndToEndTestSubmitGrades {
 			
 			 WebElement w = driver.findElement(By.xpath("//div[@data-field='name' and @role='cell']"));
 			 w =  w.findElement(By.xpath("following-sibling::div[@data-field='grade']"));
-			assertEquals("99.9", w.getText(), "score does not show value entered as 99.9");
+			 assertEquals("99.9", w.getText(), "score does not show value entered as 99.9");
 
 			// verify that assignment_grade has been added to database with score of 99.9
 			ag = assignnmentGradeRepository.findByAssignmentIdAndStudentEmail(a.getId(), TEST_USER_EMAIL);
@@ -185,6 +185,7 @@ public class EndToEndTestSubmitGrades {
 			/*
 			 *  clean up database so the test is repeatable.
 			 */
+			//
 			ag = assignnmentGradeRepository.findByAssignmentIdAndStudentEmail(a.getId(), TEST_USER_EMAIL);
 			if (ag!=null) assignnmentGradeRepository.delete(ag);
 			enrollmentRepository.delete(e);
