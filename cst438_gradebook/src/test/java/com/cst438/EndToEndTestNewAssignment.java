@@ -28,9 +28,7 @@ import com.cst438.domain.EnrollmentRepository;
 
 @SpringBootTest
 public class EndToEndTestNewAssignment {
-	// do to your own local file location
 	public static final String CHROME_DRIVER_FILE_LOCATION = "C:/Users/cueva/OneDrive/Desktop/chromedriver_win32/chromedriver.exe";
-	// change to your own
 	public static final String URL = "http://localhost:3000";
 	public static final String TEST_USER_EMAIL = "test@csumb.edu";
 	public static final String TEST_INSTRUCTOR_EMAIL = "dwisneski@csumb.edu";
@@ -49,15 +47,12 @@ public class EndToEndTestNewAssignment {
 	CourseRepository courseRepository;
 
 	@Autowired
-	AssignmentGradeRepository assignnmentGradeRepository;
-
-	@Autowired
 	AssignmentRepository assignmentRepository;
 	
 	@Test
 	public void newAssignmentTest() throws Exception {
 
-//		Database setup:  create course		
+		//Database setup:  create course		
 		Course c = new Course();
 		c.setCourse_id(TEST_COURSE_ID);
 		c.setInstructor(TEST_INSTRUCTOR_EMAIL);
@@ -66,7 +61,7 @@ public class EndToEndTestNewAssignment {
 		c.setTitle(TEST_COURSE_TITLE);
 
 
-//	    add a student TEST into course 
+	    //add a student TEST into course 
 		Enrollment e = new Enrollment();
 		e.setCourse(c);
 		e.setStudentEmail(TEST_USER_EMAIL);
@@ -75,7 +70,6 @@ public class EndToEndTestNewAssignment {
 		c = courseRepository.save(c);
 		e = enrollmentRepository.save(e);
 
-		AssignmentGrade ag = null;
 		
 		// set the driver location and start driver
 		//@formatter:off
@@ -88,7 +82,6 @@ public class EndToEndTestNewAssignment {
 		/*
 		 	* initialize the WebDriver and get the home page. 
 		*/
-		// change to your own 
 		System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_FILE_LOCATION);
 		WebDriver driver = new ChromeDriver();
 		// Puts an Implicit wait for 10 seconds before throwing exception
@@ -139,8 +132,28 @@ public class EndToEndTestNewAssignment {
 			}
 			assertTrue(founds, "Unable to locate TEST ASSIGNMENT 1 in list of assignments to be graded.");
 			
+			String toastM = driver.findElement(By.cssSelector(".Toastify__toast-body div:nth-child(2)")).getText();
+			assertEquals("Assignment Added", toastM);
+			
 		}catch(Exception ex) {
 			throw ex;
+		}
+		finally {
+
+			/*
+			 *  clean up database so the test is repeatable.
+			 */
+			enrollmentRepository.delete(e);
+			List<Assignment> getAssignment = assignmentRepository.findNeedGradingByEmail(TEST_INSTRUCTOR_EMAIL);
+			for (Assignment a : getAssignment) {
+				if (a.getName().equals(TEST_ASSIGNMENT_NAME)) {
+					assignmentRepository.delete(a);
+					break;
+				}
+			}
+			courseRepository.delete(c);
+
+			driver.quit();
 		}
 	}
 }
